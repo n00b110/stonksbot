@@ -1,7 +1,9 @@
 import discord
+import pendulum
 import yfinance as yf
 from discord.ext import commands
-from re import match
+import pandas_datareader.data as web
+import matplotlib.pyplot as plot
 import os
 from dotenv import load_dotenv
 
@@ -26,8 +28,21 @@ async def ping(ctx):
 async def check(ctx, arg):
     stock_info = yf.Ticker(arg).info
     stock_price = stock_info["regularMarketPrice"]
-    await ctx.send(stock_price)
+    await ctx.send(f"{arg} - {stock_price}")
     
+
+@bot.command()
+async def chart(ctx, ticker1):
+    data = web.DataReader(name="TSLA", data_source="yahoo", start="2021-09-11", end="2022-09-11")
+    close = data['Close']
+    axis = close.plot()
+    axis.set_xlabel('Close')
+    axis.set_ylabel('Date')
+    axis.grid()
+    plot.savefig("TSLA.png")
+    await ctx.channel.send(file=discord.File("TSLA.png"))
+
+
 
 bot.run(token)
 
