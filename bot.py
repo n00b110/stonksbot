@@ -1,6 +1,6 @@
 import discord
-import pendulum
 import yfinance as yf
+import datetime
 from discord.ext import commands
 import pandas_datareader.data as web
 import matplotlib.pyplot as plot
@@ -32,8 +32,13 @@ async def check(ctx, arg):
     
 
 @bot.command()
-async def chart(ctx, ticker1):
-    data = web.DataReader(name="TSLA", data_source="yahoo", start="2021-09-11", end="2022-09-11")
+async def close(ctx, ticker1):
+    title = f"One year close price of {ticker1.upper()}"
+    start = datetime.datetime.now()
+    start_time = start.strftime('%Y-%m-%d')
+    end = (start - datetime.timedelta(days=3*365)).strftime('%Y-%m-%d')
+    data = web.DataReader(name=f"{ticker1.upper()}", data_source="yahoo", start=end, end=start_time)
+    plot.title(title)
     close = data['Close']
     axis = close.plot()
     axis.set_xlabel('Close')
